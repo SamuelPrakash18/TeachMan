@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { Send } from "lucide-react";
 import { Button, Card, Textarea } from "./ui";
 
 export type ChatMessage = { role: "user" | "assistant"; content: string };
@@ -9,6 +10,7 @@ type ChatPanelProps = {
   storageKey: string;
   send: (messages: ChatMessage[]) => Promise<{ reply: string; source: string }>;
   disclaimer?: string;
+  fill?: boolean;
 };
 
 const MAX_SENT_MESSAGES = 20;
@@ -22,6 +24,10 @@ function isChatMessage(value: unknown): value is ChatMessage {
 }
 
 function loadMessages(storageKey: string): ChatMessage[] {
+  // An empty key means in-memory only: never read from sessionStorage.
+  if (!storageKey) {
+    return [];
+  }
   try {
     const raw = sessionStorage.getItem(storageKey);
     if (!raw) {
@@ -37,14 +43,36 @@ function loadMessages(storageKey: string): ChatMessage[] {
   }
 }
 
-export default function ChatPanel({ title, placeholder, storageKey, send, disclaimer }: ChatPanelProps) {
+export default function ChatPanel({
+  title,
+  placeholder,
+  storageKey,
+  send,
+  disclaimer,
+  fill = false,
+}: ChatPanelProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(() => loadMessages(storageKey));
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Grow the fill-mode input with its content, up to 160px.
+  useEffect(() => {
+    const el = textareaRef.current;
+    if (!el) {
+      return;
+    }
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 160) + "px";
+  }, [input]);
 
   // Session storage only: history is never sent to or loaded from the server.
   useEffect(() => {
+    // An empty key means in-memory only: never write to sessionStorage.
+    if (!storageKey) {
+      return;
+    }
     try {
       if (messages.length === 0) {
         sessionStorage.removeItem(storageKey);
@@ -99,8 +127,69 @@ export default function ChatPanel({ title, placeholder, storageKey, send, discla
     setInput("");
   }
 
+  if (fill) {
+    return (
+      <div className="flex h-full min-h-0 flex-col">
+        <div className="flex items-center justify-between gap-2 border-b border-line px-1 pb-2">
+          <h3 className="font-manrope text-base font-semibold text-ink">{title}</h3>
+          <Button variant="ghost" onClick={handleClear} disabled={messages.length === 0 && !loading}>
+            Clear chat
+          </Button>
+        </div>
+
+        <div ref={listRef} className="min-h-0 flex-1 space-y-4 overflow-y-auto px-1 py-3">
+          {messages.length === 0 && !loading && (
+            <p className="text-sm text-muted">Ask a question to get started.</p>
+          )}
+          {messages.map((m, i) => (
+            <div
+              key={i}
+              className={
+                m.role === "user"
+                  ? "ml-auto max-w-[85%] rounded-2xl bg-brand-green text-white px-4 py-2"
+                  : "mr-auto max-w-[85%] rounded-2xl bg-white border border-line text-ink px-4 py-2"
+              }
+            >
+              <span className="sr-only">{m.role === "user" ? "You" : "Assistant"}</span>
+              <p className="whitespace-pre-wrap">{m.content}</p>
+            </div>
+          ))}
+          {loading && (
+            <p role="status" className="text-sm text-muted">
+              Thinking...
+            </p>
+          )}
+        </div>
+
+        <div className="flex items-end gap-2 border-t border-line pt-3">
+          <textarea
+            ref={textareaRef}
+            rows={1}
+            aria-label={title}
+            placeholder={placeholder}
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="max-h-40 min-h-[44px] flex-1 resize-none rounded-xl border border-line px-3 py-2 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand-blue"
+          />
+          <button
+            type="button"
+            aria-label="Send message"
+            onClick={() => void handleSend()}
+            disabled={loading || !input.trim()}
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-brand-green text-white disabled:opacity-40"
+          >
+            <Send className="h-5 w-5" aria-hidden="true" />
+          </button>
+        </div>
+
+        {disclaimer && <p className="mt-2 text-center text-xs text-muted">{disclaimer}</p>}
+      </div>
+    );
+  }
+
   return (
-    <Card>
+    <Card className={fill ? "flex h-full flex-col border-0 shadow-none" : undefined}>
       <div className="mb-3 flex items-center justify-between gap-3">
         <h3 className="font-manrope text-base font-semibold text-ink">{title}</h3>
         <Button variant="ghost" onClick={handleClear} disabled={messages.length === 0 && !loading}>
@@ -108,7 +197,10 @@ export default function ChatPanel({ title, placeholder, storageKey, send, discla
         </Button>
       </div>
 
-      <div ref={listRef} className="max-h-72 space-y-3 overflow-y-auto rounded-md border border-line p-3">
+      <div
+        ref={listRef}
+        className={`${fill ? "min-h-0 flex-1" : "max-h-72"} space-y-3 overflow-y-auto rounded-md border border-line p-3`}
+      >
         {messages.length === 0 && !loading && (
           <p className="text-sm text-muted">Ask a question to get started.</p>
         )}

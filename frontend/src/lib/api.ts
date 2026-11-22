@@ -1,4 +1,4 @@
-export const API_BASE = "";
+export const API_BASE: string = import.meta.env.VITE_API_BASE_URL ?? "";
 
 const TOKEN_KEY = "teachman_token";
 const ROLE_KEY = "teachman_role";

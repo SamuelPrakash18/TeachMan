@@ -3,6 +3,7 @@ import AppShell from "./components/AppShell";
 import RequireRole from "./components/RequireRole";
 import { ToastProvider } from "./components/ui";
 import SupportChat from "./components/SupportChat";
+import AnalyticsChatBubble from "./components/AnalyticsChatBubble";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import TutorRegister from "./pages/TutorRegister";
@@ -36,6 +37,7 @@ function ShellLayout({ role, title }: { role: "tutor" | "parent"; title?: string
   return (
     <AppShell role={role} title={title}>
       <Outlet />
+      {role === "tutor" && <AnalyticsChatBubble />}
     </AppShell>
   );
 }

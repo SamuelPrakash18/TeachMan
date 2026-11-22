@@ -27,13 +27,13 @@ services:
       - key: NVIDIA_MODEL
         value: nvidia/nemotron-3.5-lightning-30b-a3b
       - key: NVIDIA_MAX_TOKENS
-        value: "4096"
+        value: "2048"
       - key: NVIDIA_REASONING_BUDGET
         value: "2048"
       - key: NVIDIA_ENABLE_THINKING
-        value: "true"
+        value: "false"
       - key: NVIDIA_TIMEOUT_SECONDS
-        value: "60"
+        value: "180"
   - type: web
     name: teachman-web
     runtime: static
