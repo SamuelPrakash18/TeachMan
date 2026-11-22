@@ -1,0 +1,49 @@
+# Before deploying: if your API service URL is not https://teachman-api.onrender.com, change the host in the /api/* rewrite below.
+# Set CORS_ORIGINS to your frontend URL (for example https://teachman-web.onrender.com) if browsers call the API directly.
+services:
+  - type: web
+    name: teachman-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DATABASE_URL
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRE_MINUTES
+        value: "720"
+      - key: CORS_ORIGINS
+        sync: false
+      - key: NVIDIA_API_KEY
+        sync: false
+      - key: NVIDIA_BASE_URL
+        value: https://integrate.api.nvidia.com/v1
+      - key: NVIDIA_MODEL
+        value: nvidia/nemotron-3.5-lightning-30b-a3b
+      - key: NVIDIA_MAX_TOKENS
+        value: "4096"
+      - key: NVIDIA_REASONING_BUDGET
+        value: "2048"
+      - key: NVIDIA_ENABLE_THINKING
+        value: "true"
+      - key: NVIDIA_TIMEOUT_SECONDS
+        value: "60"
+  - type: web
+    name: teachman-web
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://teachman-api.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html

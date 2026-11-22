@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+backend/.pytest_cache/
+
+# Secrets — never commit
+.env
+.env.*
+!.env.example
+.env.local.example
+
+# Node / frontend build
+node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+frontend/error.txt
+frontend/tsconfig.tsbuildinfo
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs and local tooling
+*.log
+graphify-out/
+.codebenders/
+duesense.txt
+prompt.txt

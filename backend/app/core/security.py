@@ -1,0 +1,37 @@
+import datetime as dt
+import uuid
+import jwt
+from argon2 import PasswordHasher
+from argon2.exceptions import VerifyMismatchError, InvalidHashError
+from app.core.config import get_settings
+
+_hasher = PasswordHasher()
+ALGORITHM = "HS256"
+
+
+def hash_password(password: str) -> str:
+    return _hasher.hash(password)
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    try:
+        return _hasher.verify(password_hash, password)
+    except (VerifyMismatchError, InvalidHashError):
+        return False
+
+
+def create_access_token(user_id: uuid.UUID, role: str) -> str:
+    settings = get_settings()
+    now = dt.datetime.now(dt.timezone.utc)
+    payload = {
+        "sub": str(user_id),
+        "role": role,
+        "iat": now,
+        "exp": now + dt.timedelta(minutes=settings.jwt_expire_minutes),
+    }
+    return jwt.encode(payload, settings.jwt_secret, algorithm=ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict:
+    settings = get_settings()
+    return jwt.decode(token, settings.jwt_secret, algorithms=[ALGORITHM])
