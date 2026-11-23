@@ -63,6 +63,7 @@ class ParentRegisterIn(BaseModel):
 class LoginIn(BaseModel):
     phone: str = Field(..., min_length=10, max_length=15)
     password: str = Field(..., min_length=1, max_length=128)
+    role: Literal["tutor", "parent"] | None = None
 
 
 class ChangePasswordIn(BaseModel):

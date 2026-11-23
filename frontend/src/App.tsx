@@ -2,7 +2,6 @@ import { Navigate, Outlet, Route, Routes } from "react-router-dom";
 import AppShell from "./components/AppShell";
 import RequireRole from "./components/RequireRole";
 import { ToastProvider } from "./components/ui";
-import SupportChat from "./components/SupportChat";
 import AnalyticsChatBubble from "./components/AnalyticsChatBubble";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -21,7 +20,6 @@ import TutorExpenses from "./pages/tutor/Expenses";
 import TutorForecast from "./pages/tutor/Forecast";
 import TutorSimulator from "./pages/tutor/Simulator";
 import TutorLearning from "./pages/tutor/Learning";
-import TutorAssistant from "./pages/tutor/Assistant";
 import TutorSettings from "./pages/tutor/Settings";
 import ParentHome from "./pages/parent/Home";
 import ParentFindTutors from "./pages/parent/FindTutors";
@@ -45,7 +43,6 @@ function ShellLayout({ role, title }: { role: "tutor" | "parent"; title?: string
 export default function App() {
   return (
     <ToastProvider>
-      <SupportChat />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
@@ -72,7 +69,6 @@ export default function App() {
           <Route path="forecast" element={<TutorForecast />} />
           <Route path="simulator" element={<TutorSimulator />} />
           <Route path="learning" element={<TutorLearning />} />
-          <Route path="assistant" element={<TutorAssistant />} />
           <Route path="notifications" element={<Notifications />} />
           <Route path="settings" element={<TutorSettings />} />
         </Route>

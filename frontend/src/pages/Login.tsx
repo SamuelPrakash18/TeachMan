@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { z } from "zod";
 import Logo from "../components/Logo";
 import { Button, Card, Field, Input } from "../components/ui";
@@ -17,6 +17,8 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const selectedRole = searchParams.get("role") === "tutor" ? "tutor" : searchParams.get("role") === "parent" ? "parent" : null;
   const [serverError, setServerError] = useState<string | null>(null);
   const {
     register,
@@ -29,7 +31,7 @@ export default function Login() {
     try {
       const res = await apiFetch<TokenOut>("/auth/login", {
         method: "POST",
-        body: { phone: values.phone, password: values.password },
+        body: { phone: values.phone, password: values.password, role: selectedRole },
       });
       setSession(res.access_token, res.role);
       navigate(res.role === "tutor" ? "/tutor" : "/parent", { replace: true });
@@ -42,8 +44,10 @@ export default function Login() {
     <div className="flex min-h-screen flex-col items-center bg-brand-cream px-4 py-10 text-ink">
       <Logo />
       <Card className="mt-8 w-full max-w-md">
-        <h1 className="font-manrope text-xl font-bold">Log in to TeachMan</h1>
-        <p className="mt-1 text-sm text-muted">Use your registered phone number and password.</p>
+        <h1 className="font-manrope text-xl font-bold">Log in to DueSense AI</h1>
+        <p className="mt-1 text-sm text-muted">
+          {selectedRole === "tutor" ? "Tutor login" : selectedRole === "parent" ? "Student / Parent login" : "Use your registered phone number and password."}
+        </p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4" noValidate>
           <Field label="Phone number">

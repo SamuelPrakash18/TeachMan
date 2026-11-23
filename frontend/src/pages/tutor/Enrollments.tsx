@@ -11,6 +11,8 @@ type Enrollment = {
 };
 
 const FILTERS = ["all", "requested", "approved", "rejected"];
+const statusLabel = (status: string) =>
+  status === "requested" ? "Pending" : status === "approved" ? "Accepted" : status === "rejected" ? "Rejected" : status;
 
 const errMsg = (e: unknown) => (e instanceof Error ? e.message : "Something went wrong");
 
@@ -100,13 +102,13 @@ export default function Enrollments() {
                     <td className="py-2 pr-4">{r.batch_name}</td>
                     <td className="py-2 pr-4">{r.requested_at}</td>
                     <td className="py-2 pr-4">
-                      <Badge>{r.status}</Badge>
+                      <Badge>{statusLabel(r.status)}</Badge>
                     </td>
                     <td className="py-2 pr-4">
                       {r.status === "requested" && (
                         <div className="flex flex-wrap gap-2">
                           <Button disabled={busyId === r.id} onClick={() => act(r.id, "approve")}>
-                            Approve
+                            Accept
                           </Button>
                           <Button
                             variant="danger"

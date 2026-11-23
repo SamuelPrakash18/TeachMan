@@ -11,6 +11,9 @@ interface Enrollment {
   decided_at: string | null;
 }
 
+const statusLabel = (status: string) =>
+  status === "requested" ? "Pending" : status === "approved" ? "Accepted" : status === "rejected" ? "Rejected" : status;
+
 export default function Enrollments() {
   const toast = useToast();
   const [rows, setRows] = useState<Enrollment[] | null>(null);
@@ -54,7 +57,7 @@ export default function Enrollments() {
                     <td className="py-2 pr-4">{r.student_name}</td>
                     <td className="py-2 pr-4">{r.batch_name}</td>
                     <td className="py-2 pr-4">
-                      <StatusBadge status={r.status} />
+                      <StatusBadge status={statusLabel(r.status)} />
                     </td>
                     <td className="py-2 pr-4">{r.requested_at}</td>
                     <td className="py-2 pr-4">{r.decided_at ?? "-"}</td>

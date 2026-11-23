@@ -160,6 +160,11 @@ def login(body: LoginIn, db: Session = Depends(get_db)) -> TokenOut:
     user = db.scalar(select(User).where(User.phone == body.phone))
     if user is None or not verify_password(body.password, user.password_hash):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=BAD_CREDENTIALS_DETAIL)
+    if body.role is not None and user.role != body.role:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=f"This account is for a {user.role}. Choose the correct role.",
+        )
     if user.status != "active":
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account is not active")
 

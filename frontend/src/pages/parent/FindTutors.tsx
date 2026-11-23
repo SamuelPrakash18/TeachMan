@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiFetch, money } from "../../lib/api";
 import type { Child } from "../../lib/types";
-import { Card, Button, Field, Input, Select, Badge, Empty, Skeleton, useToast } from "../../components/ui";
+import { Card, Button, Field, Input, Select, Badge, Empty, Skeleton, Modal, useToast } from "../../components/ui";
 
 interface TutorCard {
   id: string;
@@ -15,6 +15,7 @@ interface TutorCard {
 
 interface PublicBatch {
   id: string;
+  tutor_id: string;
   name: string;
   tutor_name: string;
   course_label: string;
@@ -37,6 +38,8 @@ export default function FindTutors() {
   const [studentId, setStudentId] = useState("");
   const [batchId, setBatchId] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [selectedTutorId, setSelectedTutorId] = useState("");
+  const [applicationOpen, setApplicationOpen] = useState(false);
 
   const loadTutors = (filters: { subject: string; grade: string; district: string }) => {
     const params = new URLSearchParams();
@@ -85,12 +88,21 @@ export default function FindTutors() {
       });
       toast.success("Enrollment requested. The tutor will review it.");
       setBatchId("");
+      setApplicationOpen(false);
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Could not request enrollment");
     } finally {
       setSubmitting(false);
     }
   };
+
+  const openApplication = (tutorId: string) => {
+    setSelectedTutorId(tutorId);
+    setBatchId("");
+    setApplicationOpen(true);
+  };
+
+  const tutorBatches = (batches ?? []).filter((batch) => batch.tutor_id === selectedTutorId);
 
   return (
     <div className="space-y-6">
@@ -137,6 +149,14 @@ export default function FindTutors() {
                 <div className="mt-2">
                   <Badge>{t.teaching_mode}</Badge>
                 </div>
+                <Button
+                  type="button"
+                  variant="primary"
+                  className="mt-4 w-full"
+                  onClick={() => openApplication(t.id)}
+                >
+                  Apply to Tutor
+                </Button>
               </Card>
             ))}
           </div>
@@ -169,36 +189,40 @@ export default function FindTutors() {
         )}
       </section>
 
-      <Card>
-        <h2 className="font-manrope text-lg font-semibold">Request enrollment</h2>
+      <Modal open={applicationOpen} onClose={() => setApplicationOpen(false)} title="Apply to tutor">
         {children.length === 0 ? (
-          <p className="mt-2 text-sm text-slate-500">Add a child first, then request a batch for them.</p>
+          <Empty>Add a child from My Children before applying.</Empty>
         ) : (
-          <form onSubmit={requestEnrollment} className="mt-3 grid gap-3 sm:grid-cols-3">
+          <form onSubmit={requestEnrollment} className="space-y-4">
             <Field label="Child">
               <Select value={studentId} onChange={(e) => setStudentId(e.target.value)}>
                 <option value="">Select a child</option>
-                {children.map((c) => (
-                  <option key={c.id} value={c.id}>{c.name}</option>
+                {children.map((child) => (
+                  <option key={child.id} value={child.id}>{child.name}</option>
                 ))}
               </Select>
             </Field>
-            <Field label="Batch">
-              <Select value={batchId} onChange={(e) => setBatchId(e.target.value)}>
-                <option value="">Select a batch</option>
-                {(batches ?? []).map((b) => (
-                  <option key={b.id} value={b.id}>{b.name} ({b.tutor_name})</option>
-                ))}
-              </Select>
+            <Field label="Course or batch">
+              {tutorBatches.length === 0 ? (
+                <p className="text-sm text-slate-500">No open batches are available for this tutor.</p>
+              ) : (
+                <Select value={batchId} onChange={(e) => setBatchId(e.target.value)}>
+                  <option value="">Select a batch</option>
+                  {tutorBatches.map((batch) => (
+                    <option key={batch.id} value={batch.id}>{batch.name} - {batch.course_label}</option>
+                  ))}
+                </Select>
+              )}
             </Field>
-            <div className="flex items-end">
-              <Button type="submit" variant="primary" disabled={submitting}>
-                {submitting ? "Requesting..." : "Request enrollment"}
+            <div className="flex justify-end gap-2">
+              <Button type="button" variant="secondary" onClick={() => setApplicationOpen(false)}>Cancel</Button>
+              <Button type="submit" variant="primary" disabled={submitting || tutorBatches.length === 0}>
+                {submitting ? "Submitting..." : "Submit application"}
               </Button>
             </div>
           </form>
         )}
-      </Card>
+      </Modal>
     </div>
   );
 }

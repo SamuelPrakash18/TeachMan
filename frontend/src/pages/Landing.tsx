@@ -1,73 +1,63 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import Logo from "../components/Logo";
-import { Card } from "../components/ui";
-
-const benefits = [
-  {
-    title: "Know who owes you",
-    text: "See every invoice, partial payment and overdue balance at a glance.",
-  },
-  {
-    title: "Plan cash for 30, 60 and 90 days",
-    text: "Forecast incoming fees and expenses so you always know what's coming.",
-  },
-  {
-    title: "Parents pay and track fees online",
-    text: "Families see their invoices and pay by UPI, with every payment recorded.",
-  },
-];
 
 export default function Landing() {
+  const [role, setRole] = useState<"tutor" | "parent" | null>(null);
+
   return (
-    <div className="min-h-screen bg-brand-cream text-ink">
+    <div className="min-h-screen overflow-hidden bg-[#071711] text-ink">
       <style>{`
-        @keyframes tm-fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-        .tm-fade-in { animation: tm-fade-in 0.6s ease-out both; }
+        @keyframes ds-brand-in { from { opacity: 0; transform: scale(.96) translateY(12px); } to { opacity: 1; transform: none; } }
+        @keyframes ds-panel-in { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+        .ds-brand-in { animation: ds-brand-in .7s cubic-bezier(.2,.8,.2,1) both; }
+        .ds-panel-in { animation: ds-panel-in .65s cubic-bezier(.2,.8,.2,1) both; }
+        @media (prefers-reduced-motion: reduce) { .ds-brand-in,.ds-panel-in { animation: none; } }
       `}</style>
+      <main className="relative grid min-h-screen md:grid-cols-2">
+        <section className={`ds-panel-in relative min-h-[50vh] overflow-hidden transition-all duration-700 md:min-h-screen ${role === "parent" ? "md:translate-x-[-8%] md:scale-[.92]" : role === "tutor" ? "md:translate-x-0" : ""}`}>
+          <img src="/images/teacher-and-student.jfif" alt="Tutor managing a teaching session" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#071711] via-[#071711]/55 to-transparent" />
+          <div className="relative flex h-full flex-col justify-end p-6 pb-10 text-white md:p-12 md:pb-16">
+            <p className="mb-2 text-sm font-semibold uppercase tracking-[.18em] text-emerald-200">Tutor</p>
+            <h2 className="font-manrope text-2xl font-bold md:text-4xl">Manage your teaching business smarter.</h2>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {role === "tutor" ? (
+                <>
+                  <Link to="/register/tutor" className="rounded-lg bg-white px-5 py-3 text-sm font-bold text-[#071711]">Register</Link>
+                  <Link to="/login?role=tutor" className="rounded-lg border border-white/70 px-5 py-3 text-sm font-bold text-white">Login</Link>
+                  <button type="button" onClick={() => setRole(null)} className="px-3 py-3 text-sm font-semibold text-white/80">Back</button>
+                </>
+              ) : (
+                <button type="button" onClick={() => setRole("tutor")} className="rounded-lg bg-brand-green px-5 py-3 text-sm font-bold text-white">Continue as Tutor</button>
+              )}
+            </div>
+          </div>
+        </section>
 
-      <header className="mx-auto flex max-w-5xl items-center px-6 py-6">
-        <Logo />
-      </header>
+        <section className={`ds-panel-in relative min-h-[50vh] overflow-hidden transition-all duration-700 md:min-h-screen ${role === "tutor" ? "md:translate-x-[8%] md:scale-[.92]" : role === "parent" ? "md:translate-x-0" : ""}`}>
+          <img src="/images/student.jfif" alt="Student learning with support" className="absolute inset-0 h-full w-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#08263A] via-[#08263A]/55 to-transparent" />
+          <div className="relative flex h-full flex-col justify-end p-6 pb-10 text-white md:p-12 md:pb-16">
+            <p className="mb-2 text-sm font-semibold uppercase tracking-[.18em] text-sky-200">Student / Parent</p>
+            <h2 className="font-manrope text-2xl font-bold md:text-4xl">Find the right tutor and manage your learning journey.</h2>
+            <div className="mt-6 flex flex-wrap gap-3">
+              {role === "parent" ? (
+                <>
+                  <Link to="/register/parent" className="rounded-lg bg-white px-5 py-3 text-sm font-bold text-[#08263A]">Register</Link>
+                  <Link to="/login?role=parent" className="rounded-lg border border-white/70 px-5 py-3 text-sm font-bold text-white">Login</Link>
+                  <button type="button" onClick={() => setRole(null)} className="px-3 py-3 text-sm font-semibold text-white/80">Back</button>
+                </>
+              ) : (
+                <button type="button" onClick={() => setRole("parent")} className="rounded-lg bg-brand-blue px-5 py-3 text-sm font-bold text-white">Continue as Student / Parent</button>
+              )}
+            </div>
+          </div>
+        </section>
 
-      <main className="tm-fade-in mx-auto max-w-5xl px-6 pb-16 pt-6 md:pt-12">
-        <h1 className="font-manrope text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
-          Teach smarter. Manage better. Stay financially ahead.
-        </h1>
-        <p className="mt-4 max-w-2xl text-base text-muted md:text-lg">
-          TeachMan helps tutors track students, fees, UPI payments and cash flow in one place.
-          Parents get a simple view of classes, invoices and progress without the back-and-forth.
-        </p>
-
-        <div className="mt-10 grid gap-4 md:grid-cols-3">
-          {benefits.map((benefit) => (
-            <Card key={benefit.title}>
-              <h2 className="font-manrope text-base font-semibold text-ink">{benefit.title}</h2>
-              <p className="mt-2 text-sm text-muted">{benefit.text}</p>
-            </Card>
-          ))}
+        <div className="ds-brand-in pointer-events-none absolute left-1/2 top-6 z-20 -translate-x-1/2 rounded-full border border-white/20 bg-white/95 px-5 py-2 shadow-xl md:top-8">
+          <Logo size={28} />
         </div>
-
-        <div className="mt-12 flex flex-col gap-3 sm:flex-row">
-          <Link
-            to="/register/tutor"
-            className="inline-flex items-center justify-center rounded-lg bg-brand-green px-6 py-3 text-sm font-semibold text-white transition hover:bg-brand-green/90"
-          >
-            Continue as Tutor
-          </Link>
-          <Link
-            to="/register/parent"
-            className="inline-flex items-center justify-center rounded-lg border-2 border-brand-blue bg-white px-6 py-3 text-sm font-semibold text-brand-blue transition hover:bg-brand-blue/5"
-          >
-            Continue as Parent / Student
-          </Link>
-        </div>
-
-        <p className="mt-6 text-sm text-muted">
-          Already have an account?{" "}
-          <Link to="/login" className="font-semibold text-brand-blue hover:underline">
-            Log in
-          </Link>
-        </p>
       </main>
     </div>
   );

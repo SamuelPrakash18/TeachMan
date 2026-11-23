@@ -9,7 +9,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ClipboardCheck,
-  GraduationCap,
   Home,
   LayoutDashboard,
   LogOut,
@@ -18,8 +17,6 @@ import {
   Search,
   Settings,
   SlidersHorizontal,
-  Sparkles,
-  Trash2,
   TrendingUp,
   UserPlus,
   Users,
@@ -48,8 +45,6 @@ const TUTOR_NAV: NavItem[] = [
   { label: "Expenses", path: "/tutor/expenses", icon: Banknote },
   { label: "Cash-Flow Forecast", path: "/tutor/forecast", icon: TrendingUp },
   { label: "What-If Simulator", path: "/tutor/simulator", icon: SlidersHorizontal },
-  { label: "Learning Progress", path: "/tutor/learning", icon: GraduationCap },
-  { label: "AI Assistant", path: "/tutor/assistant", icon: Sparkles },
   { label: "Notifications", path: "/tutor/notifications", icon: Bell },
   { label: "Settings", path: "/tutor/settings", icon: Settings },
 ];
@@ -62,9 +57,8 @@ const PARENT_NAV: NavItem[] = [
   { label: "Enrollment Requests", path: "/parent/enrollments", icon: UserPlus },
   { label: "Fees & Payments", path: "/parent/fees", icon: Receipt },
   { label: "Attendance", path: "/parent/attendance", icon: ClipboardCheck },
-  { label: "Learning Progress", path: "/parent/learning", icon: GraduationCap },
   { label: "Notifications", path: "/parent/notifications", icon: Bell },
-  { label: "Settings", path: "/parent/settings", icon: Settings },
+  { label: "Profile", path: "/parent/settings", icon: Settings },
 ];
 
 const linkBase =
@@ -85,7 +79,6 @@ export default function AppShell({
 
   const items = role === "tutor" ? TUTOR_NAV : PARENT_NAV;
   const basePath = `/${role}`;
-  const settingsPath = `${basePath}/settings`;
 
   const closeDrawer = () => setDrawerOpen(false);
 
@@ -133,15 +126,6 @@ export default function AppShell({
     }`;
     return (
       <div className="space-y-1 border-t border-line pt-3">
-        <Link
-          to={settingsPath}
-          title="Account settings"
-          onClick={onNavigate}
-          className={footerClass}
-        >
-          <Settings className="h-5 w-5 shrink-0" aria-hidden="true" />
-          {!compact && <span>Account settings</span>}
-        </Link>
         <button
           type="button"
           title="Logout"
@@ -151,15 +135,6 @@ export default function AppShell({
           <LogOut className="h-5 w-5 shrink-0" aria-hidden="true" />
           {!compact && <span>Logout</span>}
         </button>
-        <Link
-          to={`${settingsPath}#delete`}
-          title="Delete account"
-          onClick={onNavigate}
-          className={`${footerClass} text-danger hover:bg-danger/10`}
-        >
-          <Trash2 className="h-5 w-5 shrink-0" aria-hidden="true" />
-          {!compact && <span>Delete account</span>}
-        </Link>
       </div>
     );
   }

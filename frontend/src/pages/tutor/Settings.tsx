@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiFetch } from "../../lib/api";
-import { Card, Button, Field, Input, Badge, Empty, Skeleton, Modal, useToast } from "../../components/ui";
+import { Card, Button, Field, Input, Badge, Empty, Skeleton, Modal, Select, useToast } from "../../components/ui";
 
 type AccountSettings = {
   phone: string;
@@ -12,6 +12,23 @@ type AccountSettings = {
 type DeletionPreview = {
   retention_notice: string;
   [key: string]: string | number | boolean | null;
+};
+
+type TutorProfile = {
+  display_name: string;
+  phone: string;
+  public_id: string;
+  tuition_name: string;
+  door_no: string;
+  street: string;
+  district: string;
+  pin_code: string;
+  state: string;
+  subjects: string[];
+  grades: string[];
+  teaching_timings: string;
+  teaching_mode: "offline" | "online" | "hybrid";
+  upi_id: string | null;
 };
 
 const CONFIRM_PHRASE = "DELETE MY ACCOUNT";
@@ -32,6 +49,8 @@ export default function Settings() {
   const [confirming, setConfirming] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [deleteOpen, setDeleteOpen] = useState(false);
+  const [profile, setProfile] = useState<TutorProfile | null>(null);
+  const [savingProfile, setSavingProfile] = useState(false);
 
   useEffect(() => {
     apiFetch<AccountSettings>("/api/account/settings")
@@ -42,6 +61,9 @@ export default function Settings() {
       .catch((e) => toast(errMsg(e), "error"));
     apiFetch<DeletionPreview>("/api/account/deletion-preview")
       .then((p) => setPreview(p))
+      .catch((e) => toast(errMsg(e), "error"));
+    apiFetch<TutorProfile>("/tutor/profile")
+      .then(setProfile)
       .catch((e) => toast(errMsg(e), "error"));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -112,6 +134,32 @@ export default function Settings() {
     }
   }
 
+  async function saveTutorProfile(e: React.FormEvent) {
+    e.preventDefault();
+    if (!profile) return;
+    setSavingProfile(true);
+    try {
+      const updated = await apiFetch<TutorProfile>("/tutor/profile", {
+        method: "PUT",
+        body: {
+          display_name: profile.display_name,
+          tuition_name: profile.tuition_name,
+          district: profile.district,
+          teaching_timings: profile.teaching_timings,
+          teaching_mode: profile.teaching_mode,
+          upi_id: profile.upi_id,
+        },
+      });
+      setProfile(updated);
+      setSettings((current) => current ? { ...current, display_name: updated.display_name } : current);
+      toast("Tutor profile updated", "success");
+    } catch (err) {
+      toast(errMsg(err), "error");
+    } finally {
+      setSavingProfile(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <h1 className="font-manrope text-2xl font-bold">Settings</h1>
@@ -139,6 +187,43 @@ export default function Settings() {
               </Button>
             </form>
           </div>
+        )}
+      </Card>
+
+      <Card>
+        <h2 className="font-manrope mb-3 text-lg font-semibold">Business profile</h2>
+        {profile === null ? (
+          <Skeleton className="h-32" />
+        ) : (
+          <form onSubmit={saveTutorProfile} className="grid gap-3 sm:grid-cols-2">
+            <Field label="Display name">
+              <Input value={profile.display_name} onChange={(e) => setProfile({ ...profile, display_name: e.target.value })} />
+            </Field>
+            <Field label="Tuition name">
+              <Input value={profile.tuition_name} onChange={(e) => setProfile({ ...profile, tuition_name: e.target.value })} />
+            </Field>
+            <Field label="District">
+              <Input value={profile.district} onChange={(e) => setProfile({ ...profile, district: e.target.value })} />
+            </Field>
+            <Field label="Teaching timings">
+              <Input value={profile.teaching_timings} onChange={(e) => setProfile({ ...profile, teaching_timings: e.target.value })} />
+            </Field>
+            <Field label="Teaching mode">
+              <Select value={profile.teaching_mode} onChange={(e) => setProfile({ ...profile, teaching_mode: e.target.value as TutorProfile["teaching_mode"] })}>
+                <option value="offline">Offline</option>
+                <option value="online">Online</option>
+                <option value="hybrid">Hybrid</option>
+              </Select>
+            </Field>
+            <Field label="UPI payment ID">
+              <Input value={profile.upi_id ?? ""} onChange={(e) => setProfile({ ...profile, upi_id: e.target.value || null })} />
+            </Field>
+            <div className="sm:col-span-2 flex justify-end">
+              <Button type="submit" disabled={savingProfile}>
+                {savingProfile ? "Saving..." : "Save business profile"}
+              </Button>
+            </div>
+          </form>
         )}
       </Card>
 

@@ -25,6 +25,7 @@ class PublicTutorOut(BaseModel):
 
 class PublicBatchOut(BaseModel):
     id: uuid.UUID
+    tutor_id: uuid.UUID
     name: str
     tutor_name: str
     course_label: str
@@ -101,6 +102,7 @@ def list_public_batches(db: Session = Depends(get_db)) -> list[PublicBatchOut]:
         results.append(
             PublicBatchOut(
                 id=batch.id,
+                tutor_id=tutor.id,
                 name=batch.name,
                 tutor_name=tutor.display_name,
                 course_label=f"{course.subject} - {course.grade}",
