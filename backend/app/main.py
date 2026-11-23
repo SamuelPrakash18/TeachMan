@@ -9,6 +9,7 @@ from app.api.routes import ai as ai_routes, notifications as notification_routes
 from app.api.routes import attendance as attendance_routes, learning as learning_routes
 from app.api.routes import parent as parent_routes, account as account_routes
 from app.api.routes import chat as chat_routes
+from app.api.routes import public as public_routes
 from app.core.config import get_settings
 
 settings = get_settings()
@@ -38,6 +39,7 @@ app.include_router(learning_routes.router)
 app.include_router(parent_routes.router)
 app.include_router(account_routes.router)
 app.include_router(chat_routes.router)
+app.include_router(public_routes.router)
 
 
 @app.get("/api/health")

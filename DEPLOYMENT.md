@@ -6,7 +6,7 @@ This guide uses Command Prompt (cmd.exe) on Windows.
 
 - **Neon** hosts the PostgreSQL database.
 - **Render** hosts the FastAPI backend (a web service) and the React frontend (a static site).
-- The frontend calls `/api`. Render rewrites `/api/*` to the backend, so the browser talks to one domain.
+- The frontend uses `VITE_API_BASE_URL` for the backend in production and `/api` through the local Vite proxy during development.
 
 ## b. Step 1 — Neon database
 
@@ -71,7 +71,7 @@ Replace `<url>` with your repository URL.
    - `DATABASE_URL` — the Neon URL (with `postgresql+psycopg://`).
    - `NVIDIA_API_KEY` — your NVIDIA API key.
    - `CORS_ORIGINS` — the `teachman-web` URL, for example `https://teachman-web.onrender.com`.
-5. If your API URL is not `https://teachman-api.onrender.com`, edit the `/api/*` rewrite in `render.yaml` to use your real API host, commit the change, and redeploy the static site.
+5. Set `VITE_API_BASE_URL` on the `teachman-web` service to the deployed backend URL, for example `https://teachman-api.onrender.com`. The frontend adds the `/api` route prefix exactly once.
 
 ## f. Step 5 — Verify
 
@@ -86,6 +86,7 @@ Replace `<url>` with your repository URL.
 
 | Name | Where it is set | Purpose |
 |---|---|---|
+| `VITE_API_BASE_URL` | Render (`teachman-web`), prompted | Deployed FastAPI backend URL, for example `https://teachman-api.onrender.com` |
 | `DATABASE_URL` | Render (`teachman-api`), prompted at blueprint creation | Neon PostgreSQL connection string, in the form `postgresql+psycopg://...?sslmode=require` |
 | `JWT_SECRET` | Render, generated automatically (`generateValue`) | Signs login tokens. Must be long and random. |
 | `JWT_EXPIRE_MINUTES` | `render.yaml` (value `720`) | How long a login token stays valid, in minutes. |

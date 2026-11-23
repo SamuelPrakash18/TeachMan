@@ -4,7 +4,7 @@ import type { Child } from "../../lib/types";
 import { Card, Button, Field, Input, Select, Badge, Empty, Skeleton, useToast } from "../../components/ui";
 
 interface TutorCard {
-  id: number;
+  id: string;
   tuition_name: string;
   display_name: string;
   district: string;
@@ -14,7 +14,7 @@ interface TutorCard {
 }
 
 interface PublicBatch {
-  id: number;
+  id: string;
   name: string;
   tutor_name: string;
   course_label: string;
@@ -81,7 +81,7 @@ export default function FindTutors() {
     try {
       await apiFetch("/api/enrollments/request", {
         method: "POST",
-        body: { student_id: Number(studentId), batch_id: Number(batchId) },
+        body: { student_id: studentId, batch_id: batchId },
       });
       toast.success("Enrollment requested. The tutor will review it.");
       setBatchId("");

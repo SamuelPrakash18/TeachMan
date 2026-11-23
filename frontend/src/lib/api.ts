@@ -1,4 +1,17 @@
-export const API_BASE: string = import.meta.env.VITE_API_BASE_URL ?? "";
+function normalizeApiBase(value: string | undefined): string {
+  const base = (value ?? "").trim().replace(/\/+$/, "");
+  if (!base) {
+    return "/api";
+  }
+  return /\/api$/i.test(base) ? base : `${base}/api`;
+}
+
+export const API_BASE: string = normalizeApiBase(import.meta.env.VITE_API_BASE_URL);
+
+export function buildApiUrl(path: string): string {
+  const route = path.replace(/^\/+/, "").replace(/^api(?:\/|$)/i, "");
+  return `${API_BASE}/${route}`;
+}
 
 const TOKEN_KEY = "teachman_token";
 const ROLE_KEY = "teachman_role";
@@ -64,7 +77,7 @@ export async function apiFetch<T>(
     headers["Content-Type"] = "application/json";
   }
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const res = await fetch(buildApiUrl(path), {
     method: options.method ?? "GET",
     headers,
     body: hasBody ? JSON.stringify(options.body) : undefined,
