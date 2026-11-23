@@ -14,6 +14,7 @@ import {
   LogOut,
   Menu,
   Receipt,
+  RefreshCw,
   Search,
   Settings,
   SlidersHorizontal,
@@ -218,6 +219,15 @@ export default function AppShell({
             <Menu className="h-5 w-5" aria-hidden="true" />
           </button>
           <h1 className="font-manrope text-lg font-semibold text-ink">{title}</h1>
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+            aria-label="Reload page"
+            title="Reload page"
+            className="ml-auto rounded-lg p-2 text-muted transition hover:bg-brand-cream hover:text-ink"
+          >
+            <RefreshCw className="h-4 w-4" aria-hidden="true" />
+          </button>
         </header>
         <main className="p-4 md:p-6">{children}</main>
       </div>

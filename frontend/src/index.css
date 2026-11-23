@@ -7,3 +7,30 @@ body {
   color: #1F2937;
   font-family: Inter, sans-serif;
 }
+
+@keyframes tm-loading-bar {
+  0% { width: 10%; margin-left: 0; }
+  50% { width: 70%; margin-left: 15%; }
+  100% { width: 10%; margin-left: 90%; }
+}
+
+.tm-loading-bar {
+  animation: tm-loading-bar 1.1s ease-in-out infinite;
+}
+
+@keyframes tm-route-progress {
+  0% { width: 8%; }
+  45% { width: 72%; }
+  100% { width: 100%; }
+}
+
+.tm-route-progress {
+  animation: tm-route-progress 650ms cubic-bezier(.2,.8,.2,1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tm-loading-bar,
+  .tm-route-progress {
+    animation-duration: 1ms;
+  }
+}

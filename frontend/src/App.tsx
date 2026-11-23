@@ -3,6 +3,7 @@ import AppShell from "./components/AppShell";
 import RequireRole from "./components/RequireRole";
 import { ToastProvider } from "./components/ui";
 import AnalyticsChatBubble from "./components/AnalyticsChatBubble";
+import { RouteLoadingBar } from "./components/LoadingScreen";
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
 import TutorRegister from "./pages/TutorRegister";
@@ -43,6 +44,7 @@ function ShellLayout({ role, title }: { role: "tutor" | "parent"; title?: string
 export default function App() {
   return (
     <ToastProvider>
+      <RouteLoadingBar />
       <Routes>
         <Route path="/" element={<Landing />} />
         <Route path="/login" element={<Login />} />
