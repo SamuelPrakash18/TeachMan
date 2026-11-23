@@ -33,7 +33,7 @@ export default function Logo({
         />
       </svg>
       {showText && (
-        <span className="font-sora font-semibold text-lg text-ink">DueSense AI</span>
+        <span className="font-sora font-semibold text-lg text-ink">TeachMan</span>
       )}
     </div>
   );

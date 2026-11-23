@@ -131,9 +131,18 @@ export default function TutorRegister() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center bg-brand-cream px-4 py-10 text-ink">
-      <Logo />
-      <Card className="mt-8 w-full max-w-xl">
+    <div className="relative flex min-h-screen flex-col items-center overflow-hidden bg-[#f7f9f5] px-4 py-10 text-ink">
+      <style>{`
+        @keyframes auth-card-in { from { opacity: 0; transform: translateY(18px) scale(.985); } to { opacity: 1; transform: none; } }
+        .auth-card-in { animation: auth-card-in .55s cubic-bezier(.2,.8,.2,1) both; }
+        @media (prefers-reduced-motion: reduce) { .auth-card-in { animation: none; } }
+      `}</style>
+      <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-brand-green/15 blur-3xl" />
+      <div className="pointer-events-none absolute -right-24 bottom-10 h-80 w-80 rounded-full bg-brand-blue/15 blur-3xl" />
+      <div className="auth-card-in relative z-10 rounded-2xl border border-white/70 bg-white/75 px-5 py-3 shadow-[0_12px_40px_rgba(31,41,55,.12)] backdrop-blur-xl">
+        <Logo size={32} />
+      </div>
+      <Card className="auth-card-in relative z-10 mt-6 w-full max-w-xl border-white/70 bg-white/85 shadow-[0_24px_70px_rgba(31,41,55,.16)] backdrop-blur-xl">
         <div className="flex items-center justify-between gap-4">
           <h1 className="font-manrope text-xl font-bold">Register as a tutor</h1>
           <span className="text-sm font-medium text-muted">Step {step} of 2</span>
