@@ -33,7 +33,9 @@ export default function Logo({
         />
       </svg>
       {showText && (
-        <span className="font-sora font-semibold text-lg text-ink">TeachMan</span>
+        <span className={`font-sora font-bold text-ink ${size >= 40 ? "text-2xl" : "text-lg"}`}>
+          TeachMan
+        </span>
       )}
     </div>
   );

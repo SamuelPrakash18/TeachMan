@@ -60,8 +60,8 @@ export default function Landing() {
           </div>
         </section>
 
-        <div className="ds-brand-in ds-float pointer-events-none absolute left-1/2 top-6 z-30 -translate-x-1/2 rounded-2xl border border-white/30 bg-white/90 px-5 py-2 shadow-[0_12px_40px_rgba(15,23,42,.24)] backdrop-blur-xl md:top-8">
-          <Logo size={32} />
+        <div className="ds-brand-in ds-float pointer-events-none absolute left-1/2 top-5 z-30 -translate-x-1/2 rounded-2xl border border-white/40 bg-white/95 px-6 py-3 shadow-[0_12px_40px_rgba(15,23,42,.28)] backdrop-blur-xl md:top-8 md:px-8 md:py-4">
+          <Logo size={44} />
         </div>
       </main>
     </div>
